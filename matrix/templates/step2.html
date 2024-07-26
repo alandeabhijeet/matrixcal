@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Enter Matrix Details</h1>
+<form id="matrix-form" method="post" action="{{ url_for('step2') }}">
+    <input type="hidden" name="num_matrices" value="{{ num_matrices }}">
+    
+    <div id="matrices-container"></div>
+    
+    <fieldset>
+        <legend>Operation</legend>
+        {% if num_matrices == 1 %}
+            <input type="radio" id="det" name="operation" value="det" required>
+            <label for="det">Determinant</label>
+            <input type="radio" id="rank" name="operation" value="rank">
+            <label for="rank">Rank</label>
+        {% elif num_matrices == 2 %}
+            <input type="radio" id="add" name="operation" value="add" required>
+            <label for="add">Add</label>
+            <input type="radio" id="subtract" name="operation" value="subtract">
+            <label for="subtract">Subtract</label>
+            <input type="radio" id="multiply" name="operation" value="multiply">
+            <label for="multiply">Multiply</label>
+        {% endif %}
+    </fieldset>
+    
+    <button type="submit">Calculate</button>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const numMatrices = {{ num_matrices }} ;
+    const container = document.getElementById('matrices-container');
+    
+    for (let i = 0; i < numMatrices; i++) {
+        const fieldset = document.createElement('fieldset');
+        fieldset.innerHTML = `<legend>Matrix ${i + 1}</legend>
+            <label for="rows_${i}">Number of rows:</label>
+            <input type="number" id="rows_${i}" name="rows_${i}" min="1" required>
+            <label for="cols_${i}">Number of columns:</label>
+            <input type="number" id="cols_${i}" name="cols_${i}" min="1" required>
+            <div id="matrix_${i}_grid" class="matrix-grid"></div>
+        `;
+        container.appendChild(fieldset);
+    }
+
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const matrixIndex = this.id.split('_')[1];
+            const rows = parseInt(document.getElementById(`rows_${matrixIndex}`).value);
+            const cols = parseInt(document.getElementById(`cols_${matrixIndex}`).value);
+            generateMatrixGrid(matrixIndex, rows, cols);
+        });
+    });
+
+    function generateMatrixGrid(index, rows, cols) {
+        const gridContainer = document.getElementById(`matrix_${index}_grid`);
+        gridContainer.innerHTML = '';
+        if (rows > 0 && cols > 0) {
+            for (let r = 0; r < rows; r++) {
+                const row = document.createElement('div');
+                row.className = 'matrix-row';
+                for (let c = 0; c < cols; c++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.name = `matrix_${index}_${r}_${c}`;
+                    input.placeholder = `(${r + 1}, ${c + 1})`;
+                    row.appendChild(input);
+                }
+                gridContainer.appendChild(row);
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Select Number of Matrices</h1>
+<form method="post">
+    <label for="num_matrices">Number of matrices:</label>
+    <input type="number" id="num_matrices" name="num_matrices" min="1" required>
+    <button type="submit">Next</button>
+</form>
+{% endblock %}
